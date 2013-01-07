@@ -18,22 +18,24 @@
                 <dd><input type="submit" value="Share"></dd>
             </dl>
         </form>
-    {% endif %}
-    {% if queues %}
-        <p>There are {{ queues|count }} queues at the moment:</p>
-        <table class="queues">
-            <tr>
-                <th>Title</th>
-                <th>Deadline</th>
-            </tr>
-        {% for queue in queues %}
-            <tr>
-                <td>{{ queue.title }}</td>
-                <td>{{ queue.deadline|safe }}</td>
-            </tr>
-        {% endfor %}
-        </table>
+        {% if queues %}
+            <p>There are {{ queues|count }} queues at the moment:</p>
+            <table class="queues">
+                <tr>
+                    <th>Title</th>
+                    <th>Deadline</th>
+                </tr>
+            {% for queue in queues %}
+                <tr>
+                    <td>{{ queue.title }}</td>
+                    <td>{{ queue.deadline|safe }}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        {% else %}
+            <li><em>Unbelievable. No queues here so far</em></li>
+        {% endif %}
     {% else %}
-        <li><em>Unbelievable. No queues here so far</em></li>
+        <p>You must be logged in to see something useful here.</p>
     {% endif %}
 {% endblock %}
