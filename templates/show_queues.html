@@ -9,11 +9,19 @@
                 <tr>
                     <th>Title</th>
                     <th>Deadline</th>
+                    <th>Status</th>
+                    <th />
                 </tr>
             {% for queue in queues %}
                 <tr>
                     <td><a href="{{ url_for('show_queue', queue_id=queue.id) }}">{{ queue.title }}</a></td>
-                    <td>{{ queue.deadline|safe }}</td>
+                    <td>{{ queue.deadline }}</td>
+                    <td>{{ queue.status }}</td>
+                    {% if session.mid == queue.owner %}
+                        <td><a href="{{ url_for('edit_queue', queue_id=queue.id) }}">edit</a></td>
+                    {% else %}
+                        <td />
+                    {% endif %}
                 </tr>
             {% endfor %}
             </table>

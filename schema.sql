@@ -23,9 +23,11 @@ create table members (
 drop table if exists queues;
 create table queues (
     id integer primary key autoincrement,   -- queue id
+    owner integer not null,                 -- member id of the creater
     store integer not null,                 -- store id
     title string not null,                  -- somename for the queue
-    deadline string not null                -- timestamp when the queue will be ordered
+    deadline string not null,               -- timestamp when the queue will be ordered
+    status string not null                  -- status of the queue i.e. 'shipping'
 );
 
 -- table of items in the queues

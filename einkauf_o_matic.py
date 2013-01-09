@@ -75,13 +75,24 @@ def teardown_request(exception):
 # routes
 @app.route('/')
 def show_queues():
-    cur = g.db.execute('select * from queues order by deadline desc')
-    queues = [dict(id=row[0], store=row[1], title=row[2], deadline=row[3])
+    cur = g.db.execute('select id, store, title, deadline, status from queues order by deadline desc')
+    queues = [dict(id=row[0], store=row[1], title=row[2], deadline=row[3], status=row[4])
               for row in cur.fetchall()]
-    cur = g.db.execute('select * from stores order by name asc')
+    cur = g.db.execute('select id, name from stores order by name asc')
     stores = [dict(id=row[0], name=row[1])
               for row in cur.fetchall()]
     return render_template('show_queues.html', queues=queues, stores=stores)
+
+
+@app.route('/queues/<int:queue_id>/edit', methods=['GET'])
+def edit_queue(queue_id):
+    """
+    show the queue with the given id
+    """
+    cur = g.db.execute('select member, (select nick from members where id=member) as nick, name, num, price, url, paid from items where queue=' + str(queue_id))
+    queue = [dict(member=row[0], nick=row[1], name=row[2], num=row[3], price=row[4], url=row[5], paid=row[6])
+             for row in cur.fetchall()]
+    return render_template('show_queue.html', queue=queue, queue_id=queue_id)
 
 
 @app.route('/queues/<int:queue_id>', methods=['GET'])
@@ -130,10 +141,12 @@ def show_add_queue():
 def add_queue():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into queues (store, title, deadline) values (?, ?, ?)',
-                 [request.form['store'],
+    g.db.execute('insert into queues (owner, store, title, deadline, status) values (?, ?, ?, ?, ?)',
+                 [session.get('mid'),
+                  request.form['store'],
                   request.form['title'],
-                  request.form['deadline']])
+                  request.form['deadline'],
+                  'in progress'])
     g.db.commit()
     flash('New queue was successfully posted')
     return redirect(url_for('show_queues'))
@@ -178,6 +191,7 @@ def login():
             error = 'Invalid password'
         else:
             session['logged_in'] = True
+            session['mid'] = 0
             flash('You were logged in')
             return redirect(url_for('show_queues'))
     return render_template('login.html', error=error)

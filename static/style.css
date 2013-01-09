@@ -16,6 +16,8 @@ table th+th             { border-left: 1pt solid black; }
 table td+td             { border-left: 1pt solid lightgray; }
 table tr                { border-bottom: 1pt solid lightgray; }
 table tr:first-child    { background-color: lightgray; border-top: 1pt solid black; border-bottom: 1pt solid black; }
+table th:last-child,
+table td:last-child     { background-color: none; border: none; }
 table th                { font-weight: bold; }
 table td                { padding: 3pt; }
 
