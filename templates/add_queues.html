@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+        <p><a href="{{ url_for('show_queues') }}">Back</a></p>
+        <form action="{{ url_for('add_queue') }}" method="post" class="add-queue">
+            <dl>
+                <dt>Title:</dt>
+                <dd><input type="text" size="30" name="title" /></dd>
+                <dt>Deadline:</dt>
+                <dd><input type="text" size="30" name="deadline" /></dd>
+                <dt>Store:</dt>
+                <select name="store">
+                {% for store in stores %}
+                    <option value="{{ store.id }}">{{ store.name }}</option>
+                {% else %}
+                    <dd><em>Sorry you have to add a <a href="{{ url_for('add_store') }}">store</a> first.</em></li>
+                {% endfor %}
+                </select>
+                <dd><input type="submit" value="Share"></dd>
+            </dl>
+        </form>
+    {% else %}
+        <p>You must be logged in to see something useful here.</p>
+    {% endif %}
+{% endblock %}

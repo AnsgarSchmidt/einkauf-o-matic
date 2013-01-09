@@ -1,23 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
     {% if session.logged_in %}
-        <form action="{{ url_for('add_store') }}" method="post" class="add-store">
-            <dl>
-                <dt>Name:</dt>
-                <dd><input type="text" size="32" name="name" /></dd>
-                <dt>URL:</dt>
-                <dd><input type="text" size="32" name="url" /></dd>
-                <dt>Minimal order (USD):</dt>
-                <dd><input type="number" size="10" name="minorder" value="0" /></dd>
-                <dd><input type="submit" value="Add"></dd>
-            </dl>
-        </form>
-    {% endif %}
-    <ul class="stores">
-    {% for store in stores %}
-        <li><a href="{{ store.url|safe }}">{{ store.name }}</a> - Min. order: {{ store.minorder }} USD</li>
+        <p><a href="{{ url_for('show_queues') }}">Back</a></p>
+        <p><a href="{{ url_for('add_store') }}">Add store</a></p>
+        <ul class="stores">
+        {% for store in stores %}
+            <li><a href="{{ store.url|safe }}">{{ store.name }}</a> - Min. order: {{ store.minorder }} USD</li>
+        {% else %}
+            <li><em>Unbelievable. No stores here so far</em></li>
+        {% endfor %}
+        </ul>
     {% else %}
-        <li><em>Unbelievable. No stores here so far</em></li>
-    {% endfor %}
-    </ul>
+        <p>You must be logged in to see something useful here.</p>
+    {% endif %}
 {% endblock %}

@@ -15,8 +15,8 @@ create table members (
     id integer primary key autoincrement,   -- member id
     nick string not null,                   -- member nick name
     hash string not null,                   -- sha1(salt+pass)
-    salt string not null,                   -- per user generated salt
-    mail string not null                    -- mail for pass recovery
+    salt integer not null,                   -- per user generated salt
+    status string not null                  -- used for registration etc.
 );
 
 -- table of currently running queues
