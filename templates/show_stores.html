@@ -5,7 +5,11 @@
         <p><a href="{{ url_for('add_store') }}">Add store</a></p>
         <ul class="stores">
         {% for store in stores %}
-            <li><a href="{{ store.url|safe }}">{{ store.name }}</a> - Min. order: {{ store.minorder }} USD</li>
+            {% if store.minorder > 0 %}
+                <li><a href="{{ store.url|safe }}">{{ store.name }}</a>, minimal order: $ {{ store.minorder }}</li>
+            {% else %}
+                <li><a href="{{ store.url|safe }}">{{ store.name }}</a></li>
+            {% endif %}
         {% else %}
             <li><em>Unbelievable. No stores here so far</em></li>
         {% endfor %}

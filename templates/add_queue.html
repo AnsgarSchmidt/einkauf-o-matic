@@ -11,7 +11,11 @@
                 <dt>Store:</dt>
                 <select name="store">
                 {% for store in stores %}
-                    <option value="{{ store.id }}">{{ store.name }}</option>
+                    {% if store.minorder > 0 %}
+                        <option value="{{ store.id }}">{{ store.name }}, &gt; $ {{ store.minorder }}</option>
+                    {% else %}
+                        <option value="{{ store.id }}">{{ store.name }}</option>
+                    {% endif %}
                 {% else %}
                     <dd><em>Sorry you have to add a <a href="{{ url_for('add_store') }}">store</a> first.</em></li>
                 {% endfor %}

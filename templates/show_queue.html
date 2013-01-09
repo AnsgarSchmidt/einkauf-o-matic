@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+        <p><a href="{{ url_for('show_queues') }}">Back</a></p>
+        <table class="queue">
+            <tr>
+                <th>Member</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>URL</th>
+                <th>Paid</th>
+            </tr>
+        {% for queue in queues %}
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        {% endfor %}
+        </table>
+        <p>There are {{ queues|count }} queues at the moment:</p>
+
+        <form action="" method="post" class="add-item">
+            <dl>
+
+                <dt>Name:</dt>
+                <dd><input type="text" size="32" name="name" /></dd>
+                <dt>URL:</dt>
+                <dd><input type="text" size="32" name="url" /></dd>
+                <dt>Quantity:</dt>
+                <dd><input type="number" size="32" name="quantity" value="1" /></dd>
+                <dt>Price:</dt>
+                <dd><input type="decimal" size="32" name="price" /></dd>
+                <dd><input type="submit" value="Add"></dd>
+            </dl>
+        </form>
+    {% else %}
+        <p>You must be logged in to see something useful here.</p>
+    {% endif %}
+{% endblock %}

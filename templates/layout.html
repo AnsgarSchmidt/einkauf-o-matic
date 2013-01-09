@@ -8,8 +8,10 @@
 </head>
 <body>
 
-    <div class=page>
-        <h1>einkauf-o-matic</h1>
+    <section>
+        <header>
+            <h1>einkauf-o-matic</h1>
+        </header>
         <div class=metanav>
         {% if not session.logged_in %}
             <a href="{{ url_for('login') }}">log in</a> - <a href="{{ url_for('show_register') }}">register</a>
@@ -21,7 +23,11 @@
             <div class=flash>{{ message }}</div>
         {% endfor %}
         {% block body %}{% endblock %}
-    </div>
+        <footer>
+            <a href="http://flask.pocoo.org/"><img src="http://flask.pocoo.org/static/badges/powered-by-flask-s.png" border="0" alt="powered by Flask" title="powered by Flask"></a>
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a>
+        </footer>
+    </section>
 
 </body>
 </html>

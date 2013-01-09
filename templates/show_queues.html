@@ -12,7 +12,7 @@
                 </tr>
             {% for queue in queues %}
                 <tr>
-                    <td>{{ queue.title }}</td>
+                    <td><a href="{{ url_for('show_queue', queue_id=queue.id) }}">{{ queue.title }}</a></td>
                     <td>{{ queue.deadline|safe }}</td>
                 </tr>
             {% endfor %}

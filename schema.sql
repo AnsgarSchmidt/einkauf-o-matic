@@ -15,7 +15,7 @@ create table members (
     id integer primary key autoincrement,   -- member id
     nick string not null,                   -- member nick name
     hash string not null,                   -- sha1(salt+pass)
-    salt integer not null,                   -- per user generated salt
+    salt integer not null,                  -- per user generated salt
     status string not null                  -- used for registration etc.
 );
 
@@ -37,5 +37,6 @@ create table items (
     num integer not null,                   -- item quantity
     price real not null,                    -- single price
     member integer not null,                -- member id
-    url string not null                     -- link to item in store
+    url string not null,                    -- link to item in store
+    paid integer not null                   -- 0=unpaid, 1=paid
 );
