@@ -7,10 +7,11 @@
     </style>
 </head>
 <body>
+<img class="g" src="{{ url_for('static', filename='g.gif') }}" alt="" />
 
     <section>
         <header>
-            <h1>einkauf-o-matic</h1>
+            <h1><img src="{{ url_for('static', filename='logo_128x128.png') }}" alt="einkauf-o-matic logo" />einkauf-o-matic</h1>
         </header>
         <div class=metanav>
         {% if not session.logged_in %}
@@ -26,6 +27,7 @@
         <footer>
             <a href="http://flask.pocoo.org/"><img src="http://flask.pocoo.org/static/badges/powered-by-flask-s.png" border="0" alt="powered by Flask" title="powered by Flask"></a>
             <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a>
+            <a href="http://c-base.org/"><img src="{{ url_for('static', filename='c-base_32x32.png') }}" alt="einkauf-o-matic logo" /></a>
         </footer>
     </section>
 
