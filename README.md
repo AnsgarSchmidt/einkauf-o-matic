@@ -1,3 +1,5 @@
+![logo][logo]
+
 einkauf-o-matic
 ===============
 
@@ -10,4 +12,5 @@ Icons from http://www.jakubstacho.cz/checkout/ licensed under [Creative Commons 
 [![creative commons by-nc-sa][by-nc-sa]](http://creativecommons.org/licenses/by-nc-sa/3.0/deed)  
 einkauf-o-matic by XenGi is licensed under [Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported Licence](http://creativecommons.org/licenses/by-nc-sa/3.0/deed).
 
+[logo]: https://github.com/xengi/einkauf-o-matic/raw/master/static/logo.png "einkauf-o-matic logo"
 [by-nc-sa]: http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png "Creative Commons Licence"
