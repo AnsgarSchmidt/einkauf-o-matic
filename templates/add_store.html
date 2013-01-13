@@ -9,7 +9,15 @@
                 <dt>URL:</dt>
                 <dd><input type="text" size="32" name="url" /></dd>
                 <dt>Minimal order (USD):</dt>
-                <dd><input type="number" size="10" name="minorder" value="0" /></dd>
+                <dd><input type="number" name="minorder" min="0" step="1" /></dd>
+                <dt>State:</dt>
+                <dd><input type="text" size="3" name="state" /></dd>
+                <dt>Currency:</dt>
+                <dd><input type="text" size="3" name="currency" /></dd>
+                <dt>Shipping:</dt>
+                <dd><input type="number" size="5" min="0" step="0.01" name="shipping" /></dd>
+                <dt>Comment:</dt>
+                <dd><input type="text" size="32" name="comment" value="" /></dd>
                 <dd><input type="submit" value="Add"></dd>
             </dl>
         </form>

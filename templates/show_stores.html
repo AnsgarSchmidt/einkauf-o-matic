@@ -3,17 +3,33 @@
     {% if session.logged_in %}
         <p><a href="{{ url_for('show_queues') }}">Back</a></p>
         <p><a href="{{ url_for('add_store') }}">Add store</a></p>
-        <ul class="stores">
+        <p>There are {{ stores|count }} stores in the db:</p>
+        <table class="stores">
+            <tr>
+                <th>Name</th>
+                <th>Min. order</th>
+                <th>State</th>
+                <th>Currency</th>
+                <th>Shipping</th>
+                <th>Comment</th>
+                <th>&nbsp;</th>
+            </tr>
         {% for store in stores %}
-            {% if store.minorder > 0 %}
-                <li><a href="{{ store.url|safe }}">{{ store.name }}</a>, minimal order: $ {{ store.minorder }}</li>
-            {% else %}
-                <li><a href="{{ store.url|safe }}">{{ store.name }}</a></li>
-            {% endif %}
-        {% else %}
-            <li><em>Unbelievable. No stores here so far</em></li>
+            <tr>
+                <td><a href="{{ store.url }}">{{ store.name }}</a></td>
+                {% if store.minorder > 0 %}
+                    <td>{{ store.minorder }}</td>
+                {% else %}
+                    <td>none</td>
+                {% endif %}
+                <td>{{ store.state }}</td>
+                <td>{{ store.currency }}</td>
+                <td>{{ store.shipping }}</td>
+                <td>{{ store.comment }}</td>
+                <td>&nbsp;</td>
+            </tr>
         {% endfor %}
-        </ul>
+        </table>
     {% else %}
         <p>You must be logged in to see something useful here.</p>
     {% endif %}

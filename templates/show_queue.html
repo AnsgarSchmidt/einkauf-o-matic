@@ -2,35 +2,55 @@
 {% block body %}
     {% if session.logged_in %}
         <p><a href="{{ url_for('show_queues') }}">Back</a></p>
-        <table class="queue">
+        <p>There are {{ items|count }} items in this queue:</p>
+        <table class="items">
             <tr>
                 <th>Member</th>
                 <th>Name</th>
                 <th>Quantity</th>
-                <th>Price</th>
-                <th>URL</th>
-                <th>Paid</th>
+                <th>Price ({{ store.currency }})</th>
+                <th>Sub total ({{ store.currency }})</th>
+                <th>Paid ({{ store.currency }})</th>
+                <th>&nbsp;</th>
             </tr>
-        {% for queue in queues %}
+        {% for item in items %}
             <tr>
-                <td></td>
-                <td></td>
+                <td>{{ item.member }}</td>
+                <td><a href="{{ item.url }}">{{ item.name }}</a></td>
+                <td>{{ item.num }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.num*item.price }}</td>
+                <td>{{ item.paid }}</td>
+                <td>&nbsp;</td>
             </tr>
         {% endfor %}
+            <tr>
+                <td colspan="3">&nbsp;</td>
+                <td>Shipping:</td>
+                <td>{{ store.shipping }}</td>
+                <td colspan="2">&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan="3">&nbsp;</td>
+                <td>Total:</td>
+                <td>{{ totalprice }}</td>
+                <td>{{ totalpaid }}</td>
+                <td>&nbsp;</td>
+            </tr>
         </table>
-        <p>There are {{ queues|count }} queues at the moment:</p>
 
-        <form action="" method="post" class="add-item">
+        <hr />
+
+        <form action="{{ url_for('add_item', queue_id=queue_id) }}" method="post" class="add-item">
             <dl>
-
-                <dt>Name:</dt>
+                <dt>Item Name:</dt>
                 <dd><input type="text" size="32" name="name" /></dd>
                 <dt>URL:</dt>
                 <dd><input type="text" size="32" name="url" /></dd>
                 <dt>Quantity:</dt>
-                <dd><input type="number" size="32" name="quantity" value="1" /></dd>
+                <dd><input type="number" size="3" min="1" step="1" name="num" /></dd>
                 <dt>Price:</dt>
-                <dd><input type="decimal" size="32" name="price" /></dd>
+                <dd><input type="number" size="5" min="0" step="0.01" name="price" /></dd>
                 <dd><input type="submit" value="Add"></dd>
             </dl>
         </form>

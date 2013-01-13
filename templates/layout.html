@@ -7,7 +7,7 @@
     </style>
 </head>
 <body>
-<img class="g" src="{{ url_for('static', filename='g.gif') }}" alt="" />
+<img class="g" src="{{ url_for('static', filename='g.gif') }}" alt=":)" />
 
     <section>
         <header>
@@ -15,7 +15,7 @@
         </header>
         <div class=metanav>
         {% if not session.logged_in %}
-            <a href="{{ url_for('login') }}">log in</a> - <a href="{{ url_for('show_register') }}">register</a>
+            <a href="{{ url_for('login') }}">log in</a>
         {% else %}
             <a href="{{ url_for('logout') }}">log out</a>
         {% endif %}

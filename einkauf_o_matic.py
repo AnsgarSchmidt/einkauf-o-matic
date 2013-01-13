@@ -30,22 +30,22 @@ from flask import abort
 from flask import render_template
 from flask import flash
 from contextlib import closing
-from random import random
-from string import ascii_letters, digits
-from hashlib import sha1
 
 
 # configuration
 DATABASE = 'einkaufomatic.db'
-DEBUG = True
 SECRET_KEY = 'development key'
+DEBUG = True
 USERNAME = 'root'
 PASSWORD = 'toor'
+MEMBERID = 1337
 
 # create the application
 app = Flask(__name__)
 app.config.from_object(__name__)
 app.config.from_envvar('EINKAUFOMATIC_SETTINGS', silent=True)
+
+# initialize stuff
 
 
 def connect_db():
@@ -71,59 +71,67 @@ def before_request():
 def teardown_request(exception):
     g.db.close()
 
-
 # routes
+
+
 @app.route('/')
 def show_queues():
-    cur = g.db.execute('select id, store, title, deadline, status from queues order by deadline desc')
-    queues = [dict(id=row[0], store=row[1], title=row[2], deadline=row[3], status=row[4])
+    cur = g.db.execute('select id, owner, (select name from stores where id=store) as store, title, deadline, status from queues order by deadline asc')
+    queues = [dict(id=row[0], owner=row[1], store=row[2], title=row[3], deadline=row[4], status=row[5])
               for row in cur.fetchall()]
-    cur = g.db.execute('select id, name from stores order by name asc')
-    stores = [dict(id=row[0], name=row[1])
-              for row in cur.fetchall()]
-    return render_template('show_queues.html', queues=queues, stores=stores)
+    return render_template('show_queues.html', queues=queues)
 
 
-@app.route('/queues/<int:queue_id>/edit', methods=['GET'])
-def edit_queue(queue_id):
-    """
-    show the queue with the given id
-    """
-    cur = g.db.execute('select member, (select nick from members where id=member) as nick, name, num, price, url, paid from items where queue=' + str(queue_id))
-    queue = [dict(member=row[0], nick=row[1], name=row[2], num=row[3], price=row[4], url=row[5], paid=row[6])
-             for row in cur.fetchall()]
-    return render_template('show_queue.html', queue=queue, queue_id=queue_id)
-
-
-@app.route('/queues/<int:queue_id>', methods=['GET'])
+@app.route('/<int:queue_id>', methods=['GET'])
 def show_queue(queue_id):
     """
     show the queue with the given id
     """
-    cur = g.db.execute('select member, (select nick from members where id=member) as nick, name, num, price, url, paid from items where queue=' + str(queue_id))
-    queue = [dict(member=row[0], nick=row[1], name=row[2], num=row[3], price=row[4], url=row[5], paid=row[6])
+    cur = g.db.execute('select id, member, name, num, price, url, paid from items where queue=' + str(queue_id) + ' order by member asc')
+    items = [dict(id=row[0], member=row[1], name=row[2], num=row[3], price=row[4], url=row[5], paid=row[6])
              for row in cur.fetchall()]
-    return render_template('show_queue.html', queue=queue, queue_id=queue_id)
+    cur = g.db.execute('select id, url, minorder, currency, shipping from stores where id=(select store from queues where id=' + str(queue_id) + ')')
+    stores = [dict(id=row[0], url=row[1], minorder=row[2], currency=row[3], shipping=row[4])
+             for row in cur.fetchall()]
+
+    totalprice = 0
+    totalpaid = 0
+    for item in items:
+        totalprice += item.get('num')*item.get('price')
+        totalpaid += item.get('paid')
+    return render_template('show_queue.html', items=items, queue_id=queue_id, store=stores[0], totalprice=totalprice, totalpaid=totalpaid)
 
 
-@app.route('/queues/<int:queue_id>', methods=['POST'])
+@app.route('/<int:queue_id>', methods=['POST'])
 def add_item(queue_id):
     """
-    add an item to the queue
+    add the given item to the open queue and show the updated queue
     """
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into items (queue, name, num, price, member, url, paid) values (?, ?, ?, ?, ?, ?, ?)',
+    g.db.execute('insert into items (queue, member, name, num, price, url, paid) values (?, ?, ?, ?, ?, ?, ?)',
                  [queue_id,
+                  session.get('member'),
                   request.form['name'],
                   request.form['num'],
                   request.form['price'],
-                  member_id,
                   request.form['url'],
                   0])
     g.db.commit()
-    flash('New queue was successfully posted')
-    return redirect(url_for('show_queues'))
+    flash('New item was successfully added to queue')
+    return redirect(url_for('show_queue', queue_id=queue_id))
+
+
+#TODO
+@app.route('/<int:queue_id>/edit', methods=['GET'])
+def edit_queue(queue_id):
+    """
+    show the queue with the given id for edit
+    """
+    cur = g.db.execute('select member, (select nick from members where id=member) as nick, name, num, price, url, paid from items where queue=' + str(queue_id))
+    queue = [dict(member=row[0], nick=row[1], name=row[2], num=row[3], price=row[4], url=row[5], paid=row[6])
+             for row in cur.fetchall()]
+    return render_template('edit_queue.html', queue=queue, queue_id=queue_id)
 
 
 @app.route('/add', methods=['GET'])
@@ -142,7 +150,7 @@ def add_queue():
     if not session.get('logged_in'):
         abort(401)
     g.db.execute('insert into queues (owner, store, title, deadline, status) values (?, ?, ?, ?, ?)',
-                 [session.get('mid'),
+                 [session.get('member'),
                   request.form['store'],
                   request.form['title'],
                   request.form['deadline'],
@@ -154,31 +162,34 @@ def add_queue():
 
 @app.route('/stores')
 def show_stores():
-    cur = g.db.execute('select * from stores order by name asc')
-    stores = [dict(id=row[0], name=row[1], url=row[2], minorder=row[3])
+    cur = g.db.execute('select id, name, url, minorder, state, currency, shipping, comment from stores order by name asc')
+    stores = [dict(id=row[0], name=row[1], url=row[2], minorder=row[3], state=row[4], currency=row[5], shipping=row[6], comment=row[7])
               for row in cur.fetchall()]
     return render_template('show_stores.html', stores=stores)
 
 
-@app.route('/addstore', methods=['GET'])
+@app.route('/store/add', methods=['GET'])
 def show_add_store():
-    cur = g.db.execute('select * from stores order by name asc')
-    stores = [dict(id=row[0], name=row[1], url=row[2], minorder=row[3])
-              for row in cur.fetchall()]
-    return render_template('add_store.html', stores=stores)
+    return render_template('add_store.html')
 
 
-@app.route('/addstore', methods=['POST'])
+@app.route('/store/add', methods=['POST'])
 def add_store():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into stores (name, url, minorder) values (?, ?, ?)',
+    g.db.execute('insert into stores (name, url, minorder, state, currency, shipping, comment) values (?, ?, ?, ?, ?, ?, ?)',
                  [request.form['name'],
                   request.form['url'],
-                  request.form['minorder']])
+                  request.form['minorder'],
+                  request.form['state'],
+                  request.form['currency'],
+                  request.form['shipping'],
+                  request.form['comment']])
     g.db.commit()
     flash('New store was successfully posted')
     return redirect(url_for('show_stores'))
+
+# internal functions
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -191,7 +202,7 @@ def login():
             error = 'Invalid password'
         else:
             session['logged_in'] = True
-            session['mid'] = 0
+            session['member'] = MEMBERID
             flash('You were logged in')
             return redirect(url_for('show_queues'))
     return render_template('login.html', error=error)
@@ -204,26 +215,5 @@ def logout():
     return redirect(url_for('show_queues'))
 
 
-@app.route('/register', methods=['GET'])
-def show_register():
-    cur = g.db.execute('select nick from members order by nick asc')
-    members = [dict(nick=row[1])
-              for row in cur.fetchall()]
-    return render_template('register.html', members=members)
-
-
-@app.route('/register', methods=['POST'])
-def register():
-    salt = ''.join(random.choice(ascii_letters + digits) for x in range(6))
-    g.db.execute('insert into members (nick, hash, salt, status) values (?, ?, ?, ?)',
-                 [request.form['nick'],
-                  sha1(request.form['pass'] + salt),
-                  salt,
-                  'inactive'])
-    g.db.commit()
-    flash('New store was successfully posted')
-    return redirect(url_for('show_queues'))
-
-
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=DEBUG)

@@ -2,10 +2,19 @@
 
 /* stylesheet for einkauf-o-matic */
 
-body                    { font-family: FreeSans, sans; background: #EEE; }
+/*
+ * This file is part of einkauf-o-matic.
+ *
+ * einkauf-o-matic is licensed under Attribution-NonCommercial-ShareAlike 3.0
+ * Unported (CC BY-NC-SA 3.0).
+ *
+ * <http://creativecommons.org/licenses/by-nc-sa/3.0/>
+ */
+
+body                    { font-family: FreeSans, sans; background: #000; }
 header img              { vertical-align: middle; }
 header h1               { font-size: 32pt; }
-footer                  { text-align: right; }
+footer                  { text-align: right; margin-top: 1em;}
 section                 { margin: 2em auto; width: 35em; border: 5px solid #CCC; padding: 0.8em; background: #FFF; }
 a, h1, h2               { color: #377BA8; }
 h1, h2                  { margin: 0; }
