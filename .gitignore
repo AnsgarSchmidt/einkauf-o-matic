@@ -1,5 +1,7 @@
 einkaufomatic.db
 *~
+include/
+local/
 
 *.py[cod]
 
