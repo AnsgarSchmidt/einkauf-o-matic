@@ -1,4 +1,4 @@
-updatable![logo][logo]
+![logo][logo]
 
 einkauf-o-matic
 ===============
