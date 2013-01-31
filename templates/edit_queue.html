@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block body %}
+    {% if session.logged_in %}
+        <form action="{{ url_for('edit_queue', queue_id=queue.id) }}" method="post" class="add-queue">
+            <dl>
+                <dt>Title:</dt>
+                <dd><input type="text" size="30" name="title" value="{{ queue.title }}" /></dd>
+                <dt>Deadline:</dt>
+                <dd><input type="text" size="30" name="deadline" value="{{ queue.deadline }}" /></dd>
+                <dt>Store:</dt>
+                <select name="store">
+                {% for store in stores %}
+                    {% if store.minorder > 0 %}
+                        {% if store.id == queue.store %}
+                            <option value="{{ store.id }}" selected="selected">{{ store.name }}, &gt; $ {{ store.minorder }}</option>
+                        {% else %}
+                            <option value="{{ store.id }}">{{ store.name }}, &gt; $ {{ store.minorder }}</option>
+                        {% endif %}
+                    {% else %}
+                        {% if store.id == queue.store %}
+                            <option value="{{ store.id }}" selected="selected">{{ store.name }}</option>
+                        {% else %}
+                            <option value="{{ store.id }}">{{ store.name }}</option>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                </select>
+                <dd><input type="submit" value="Save"></dd>
+                <dd><a href="{{ url_for('show_queue', queue_id=queue_id) }}"><button>Cancel</button></a></dd>
+            </dl>
+        </form>
+    {% else %}
+        <p>You must be logged in to see something useful here.</p>
+    {% endif %}
+{% endblock %}

@@ -76,54 +76,59 @@ class EinkaufOMaticTestCase(unittest.TestCase):
         test if the app shows "You must be logged in to see something useful
         here" if we access root (/)
         """
-        rv = self.app.get('/')
-        assert 'You must be logged in to see something useful here' in rv.data
+        retval = self.app.get('/')
+        assert 'You must be logged in to see something useful' in retval.data
 
     def test_register(self):
         """
         Make sure registering works
         """
-        rv = self.register('horst', 'passw0rd')
-        assert 'You were successfully registered ' \
-               'and can login now' in rv.data
-        rv = self.register('horst', 'passw0rd')
-        assert 'The username is already taken' in rv.data
-        rv = self.register('', 'passw0rd')
-        assert 'You have to enter a username' in rv.data
-        rv = self.register('harry', '')
-        assert 'You have to enter a password' in rv.data
-        rv = self.register('harry', 'passw0rd', 'p@ssword')
-        assert 'The two passwords do not match' in rv.data
+        retval = self.register('horst', 'passw0rd')
+        assert 'You were successfully registered and can login' in retval.data
+        retval = self.register('horst', 'passw0rd')
+        assert 'The username is already taken' in retval.data
+        retval = self.register('', 'passw0rd')
+        assert 'You have to enter a username' in retval.data
+        retval = self.register('harry', '')
+        assert 'You have to enter a password' in retval.data
+        retval = self.register('harry', 'passw0rd', 'p@ssword')
+        assert 'The two passwords do not match' in retval.data
 
     def test_login_logout(self):
-        rv = self.login('root', 'toor')
-        assert 'You were logged in' in rv.data
-        rv = self.logout()
-        assert 'You were logged out' in rv.data
-        rv = self.login('wronguser', 'toor')
-        assert 'Invalid username' in rv.data
-        rv = self.login('root', 'wrongpass')
-        assert 'Invalid password' in rv.data
+        """
+        testing login and logout functionality
+        """
+        retval = self.login('root', 'toor')
+        assert 'You were logged in' in retval.data
+        retval = self.logout()
+        assert 'You were logged out' in retval.data
+        retval = self.login('wronguser', 'toor')
+        assert 'Invalid username' in retval.data
+        retval = self.login('root', 'wrongpass')
+        assert 'Invalid password' in retval.data
 
     def test_add_store(self):
         self.login('root', 'toor')
-        rv = self.app.post('/addstore', data=dict(
-            name='adafruit INDUSTRIES',
-            url='http://adafruit.com/',
-            minorder='250'
-        ), follow_redirects=True)
-        assert 'No stores here so far' not in rv.data
-        assert '<a href="http://adafruit.com/">adafruit INDUSTRIES' in rv.data
+        retval = self.app.post('/addstore',
+                               data=dict(name='adafruit INDUSTRIES',
+                                         urls='http://www.adafruit.com/,http://adafruit.com/',
+                                         minorder='250'),
+                                follow_redirects=True)
+        assert 'No stores here so far' not in retval.data
+        assert '<a href="http://www.adafruit.com/">adafruit' in retval.data
 
     def test_add_queue(self):
+        """
+        test adding new queues
+        """
         self.login('root', 'toor')
-        rv = self.app.post('/add', data=dict(
-            title='raspberrypi stuff',
-            deadline='2012-01-30',
-            store='0'
-        ), follow_redirects=True)
-        assert 'No stores here so far' not in rv.data
-        assert 'raspberrypi stuff' in rv.data and '2012-01-30' in rv.data
+        retval = self.app.post('/add', data=dict(title='raspberrypi stuff',
+                                                 deadline='2012-01-30',
+                                                 store='0'),
+                                follow_redirects=True)
+        assert 'No stores here so far' not in retval.data
+        assert 'raspberrypi stuff' in retval.data and \
+               '2012-01-30' in retval.data
 
 
 if __name__ == '__main__':

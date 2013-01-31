@@ -7,6 +7,7 @@
         <table class="stores">
             <tr>
                 <th>Name</th>
+                <th>URLs</th>
                 <th>Min. order</th>
                 <th>State</th>
                 <th>Currency</th>
@@ -16,7 +17,8 @@
             </tr>
         {% for store in stores %}
             <tr>
-                <td><a href="{{ store.url }}">{{ store.name }}</a></td>
+                <td><a href="{{ store.urls.split(',')[0] }}">{{ store.name }}</a></td>
+                <td>{{ store.urls }}</td>
                 {% if store.minorder > 0 %}
                     <td>{{ store.minorder }}</td>
                 {% else %}

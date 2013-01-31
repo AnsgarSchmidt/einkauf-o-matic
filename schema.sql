@@ -13,7 +13,7 @@ drop table if exists stores;
 create table stores (
     id integer primary key autoincrement,   -- store id
     name string not null,                   -- store name
-    url string not null,                    -- http://fqdn/
+    urls string not null,                   -- comma seperated list of http[s]://fqdn/
     minorder integer not null,              -- 0 or value in the stores currency
     state string not null,                  -- where comes the stuff from
     currency string not null,               -- currency used by this store
@@ -42,5 +42,6 @@ create table items (
     num integer not null,                   -- item quantity
     price real not null,                    -- single price
     url string not null,                    -- link to item in store
+    img_url string not null,                -- link to items image
     paid real not null                      -- amount of money already paid
 );

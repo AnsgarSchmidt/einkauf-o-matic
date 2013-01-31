@@ -22,7 +22,7 @@
                     <td>{{ queue.status }}</td>
                     <td>{{ queue.owner }}</td>
                     {% if session.member == queue.owner %}
-                        <td><a href="{{ url_for('edit_queue', queue_id=queue.id) }}"><img src="{{ url_for('static', filename='edit.png') }}" alt="edit" /></a></td>
+                        <td><a href="{{ url_for('show_edit_queue', queue_id=queue.id) }}"><img src="{{ url_for('static', filename='edit.png') }}" alt="edit" /></a></td>
                     {% else %}
                         <td />
                     {% endif %}
