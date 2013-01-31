@@ -1,11 +1,11 @@
-![logo][logo]
+updatable![logo][logo]
 
 einkauf-o-matic
 ===============
 
 This is the einkauf-o-matic for [c-base space station](http://c-base.org/)
 
-With it you can manage collective orders. You can add shops with its specific critria for minum order and discount.
+With it you can manage collective orders. You can add shops with its specific critria for minimal order and discount.
 
 ---
 
