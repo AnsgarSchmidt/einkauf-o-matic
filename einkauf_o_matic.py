@@ -15,7 +15,6 @@ c-base einkauf-o-matic
 
 __author__ = "Ricardo (XeN) Band <xen@c-base.org>"
 __copyright__ = "Copyright (C) 2012 Ricardo Band"
-__revision__ = "$Id$"
 __version__ = "0.1"
 
 
@@ -32,6 +31,7 @@ from flask import flash
 from flask import send_from_directory
 from contextlib import closing
 import os
+
 from item_crawler import ItemCrawler
 
 
@@ -44,9 +44,9 @@ PASSWORD = 'toor'
 MEMBERID = 1337
 
 # create the application
-app = Flask(__name__)
-app.config.from_object(__name__)
-app.config.from_envvar('EINKAUFOMATIC_SETTINGS', silent=True)
+APP = Flask(__name__)
+APP.config.from_object(__name__)
+APP.config.from_envvar('EINKAUFOMATIC_SETTINGS', silent=True)
 
 
 # initialize stuff
@@ -54,7 +54,7 @@ def connect_db():
     """
     let the application connect to the given database
     """
-    return sqlite3.connect(app.config['DATABASE'])
+    return sqlite3.connect(APP.config['DATABASE'])
 
 
 def init_db():
@@ -62,12 +62,12 @@ def init_db():
     create database
     """
     with closing(connect_db()) as database:
-        with app.open_resource('schema.sql') as sqlfile:
+        with APP.open_resource('schema.sql') as sqlfile:
             database.cursor().executescript(sqlfile.read())
         database.commit()
 
 
-@app.before_request
+@APP.before_request
 def before_request():
     """
     connect to the database before doing something
@@ -75,29 +75,29 @@ def before_request():
     g.db = connect_db()
 
 
-@app.teardown_request
+@APP.teardown_request
 def teardown_request(exception):
     """
     disconnect database after execution
     """
-    if not exception == None:
+    if exception is not None:
         print exception
     g.db.close()
 
 # routes
 
 
-@app.route('/favicon.ico')
+@APP.route('/favicon.ico')
 def favicon():
     """
     return the favicon
     """
-    return send_from_directory(os.path.join(app.root_path, 'static'),
+    return send_from_directory(os.path.join(APP.root_path, 'static'),
                                'favicon.ico',
                                mimetype='image/vnd.microsoft.icon')
 
 
-@app.route('/')
+@APP.route('/')
 def show_queues():
     """
     root dir shows active queues
@@ -111,7 +111,7 @@ def show_queues():
     return render_template('show_queues.html', queues=queues)
 
 
-@app.route('/<int:queue_id>', methods=['GET'])
+@APP.route('/<int:queue_id>', methods=['GET'])
 def show_queue(queue_id):
     """
     show the queue with the given id
@@ -141,7 +141,7 @@ def show_queue(queue_id):
                            totalpaid=totalpaid, totalitems=totalitems)
 
 
-@app.route('/<int:queue_id>', methods=['POST'])
+@APP.route('/<int:queue_id>', methods=['POST'])
 def add_item(queue_id):
     """
     add the given item to the open queue and show the updated queue
@@ -176,7 +176,7 @@ def add_item(queue_id):
     return redirect(url_for('show_queue', queue_id=queue_id))
 
 
-@app.route('/<int:queue_id>/edit', methods=['GET'])
+@APP.route('/<int:queue_id>/edit', methods=['GET'])
 def show_edit_queue(queue_id):
     """
     show the queue with the given id for edit
@@ -198,7 +198,7 @@ def show_edit_queue(queue_id):
                                stores=stores, queue_id=queue_id)
 
 
-@app.route('/<int:queue_id>/edit', methods=['POST'])
+@APP.route('/<int:queue_id>/edit', methods=['POST'])
 def edit_queue(queue_id):
     """
     show the queue with the given id for edit
@@ -221,7 +221,7 @@ def edit_queue(queue_id):
         return redirect(url_for('show_queue', queue_id=queue_id))
 
 
-@app.route('/add', methods=['GET'])
+@APP.route('/add', methods=['GET'])
 def show_add_queue():
     """
     show form to add new queues
@@ -233,7 +233,7 @@ def show_add_queue():
     return render_template('add_queue.html', stores=stores)
 
 
-@app.route('/add', methods=['POST'])
+@APP.route('/add', methods=['POST'])
 def add_queue():
     """
     add new queue to the database
@@ -252,7 +252,7 @@ def add_queue():
     return redirect(url_for('show_queues'))
 
 
-@app.route('/stores')
+@APP.route('/stores')
 def show_stores():
     """
     show the active stores
@@ -266,7 +266,7 @@ def show_stores():
     return render_template('show_stores.html', stores=stores)
 
 
-@app.route('/store/add', methods=['GET'])
+@APP.route('/store/add', methods=['GET'])
 def show_add_store():
     """
     show the form to submit a new store
@@ -274,7 +274,7 @@ def show_add_store():
     return render_template('add_store.html')
 
 
-@app.route('/store/add', methods=['POST'])
+@APP.route('/store/add', methods=['POST'])
 def add_store():
     """
     add a new store to the database
@@ -292,7 +292,7 @@ def add_store():
     return redirect(url_for('show_stores'))
 
 
-@app.route('/additem/<url>', methods=['GET'])
+@APP.route('/additem/<url>', methods=['GET'])
 def auto_add_item(url):
     """
     function used by the bookmarklet to add new items
@@ -306,16 +306,16 @@ def auto_add_item(url):
 # internal functions
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@APP.route('/login', methods=['GET', 'POST'])
 def login():
     """
     logs the user in or displays a login form
     """
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        if request.form['username'] != APP.config['USERNAME']:
             error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
+        elif request.form['password'] != APP.config['PASSWORD']:
             error = 'Invalid password'
         else:
             session['logged_in'] = True
@@ -325,7 +325,7 @@ def login():
     return render_template('login.html', error=error)
 
 
-@app.route('/logout')
+@APP.route('/logout')
 def logout():
     """
     logs the user out
@@ -336,4 +336,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=DEBUG)
+    APP.run(debug=DEBUG)
