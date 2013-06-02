@@ -1,0 +1,13 @@
+[Unit]
+Description=einkauf-o-matic IRC bot
+After=local-fs.target network.target
+
+[Service]
+Type=forking
+User=eom
+Group=eom
+ExecStart=python ~/src/ircbot.py
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
